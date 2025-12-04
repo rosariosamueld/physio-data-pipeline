@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import matplotlib.pyplot as plt
 
 DATA_PATH = "data/sample_raw_metabolic_data.csv"
 OUTPUT_PATH = "outputs/example_summary.csv"
@@ -87,6 +88,32 @@ def summarize_subject(df: pd.DataFrame,
 
     return pd.DataFrame([summary])
 
+def plot_vo2_time(df: pd.DataFrame,
+                  subject_id: str,
+                  out_path: str | None = None) -> None:
+    """
+    Plot VO2 (mL/min) over time for a single subject,
+    with rest vs run phases shown in different lines.
+
+    Saves the figure to out_path if provided.
+    """
+    fig, ax = plt.subplots()
+
+    # Ensure data is sorted by time
+    df = df.sort_values("time_s")
+
+    for phase, sub in df.groupby("phase"):
+        ax.plot(sub["time_s"], sub["VO2_ml_min"], label=phase)
+
+    ax.set_title(f"VO2 over time – {subject_id}")
+    ax.set_xlabel("Time (s)")
+    ax.set_ylabel("VO2 (mL/min)")
+    ax.legend()
+
+    if out_path is not None:
+        fig.savefig(out_path, bbox_inches="tight")
+
+    plt.close(fig)
 
 def main():
     # Load full dataset
@@ -94,23 +121,27 @@ def main():
 
     summaries = []
 
+    # Ensure outputs folder exists (for CSV and plots)
+    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+
     # Loop over subjects
     for subject_id, sub_df in df.groupby("subject_id"):
+        # Compute summary metrics
         summary_df = summarize_subject(sub_df)
         summaries.append(summary_df)
+
+        # Create VO2 vs time plot for this subject
+        plot_path = os.path.join("outputs", f"vo2_time_{subject_id}.png")
+        plot_vo2_time(sub_df, subject_id, out_path=plot_path)
 
     # Combine all subject summaries
     results = pd.concat(summaries, ignore_index=True)
 
-    # Ensure outputs folder exists (helpful if running locally)
-    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
-
-    # Save to CSV
+    # Save summary CSV
     results.to_csv(OUTPUT_PATH, index=False)
 
     print("Summary results:")
     print(results)
-
 
 if __name__ == "__main__":
     main()

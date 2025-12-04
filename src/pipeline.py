@@ -88,6 +88,7 @@ def summarize_subject(df: pd.DataFrame,
 
     return pd.DataFrame([summary])
 
+
 def plot_vo2_time(df: pd.DataFrame,
                   subject_id: str,
                   out_path: str | None = None) -> None:

@@ -53,15 +53,19 @@ For each participant:
 
 Mean values are calculated for each phase:
 
-> - run_vo2 = mean VO₂ during run window
-> - rest_vo2 = mean VO₂ during rest window
-> - run_vco2 = mean VCO₂ during run window
-> - rest_vco2 = mean VCO₂ during rest window
+> run_vo2 = mean VO₂ during run window
+
+> rest_vo2 = mean VO₂ during rest window
+
+> run_vco2 = mean VCO₂ during run window
+
+> rest_vco2 = mean VCO₂ during rest window
 
 Net gas exchange:
 
-> - net VO₂ = run VO₂ − rest VO₂ (mL/min)
-> - net VCO₂ = run VCO₂ − rest VCO₂ (mL/min)
+> **net VO₂ = run VO₂ − rest VO₂ (mL/min)**
+
+> **net VCO₂ = run VCO₂ − rest VCO₂ (mL/min)**
 
 ---
 
@@ -147,8 +151,10 @@ From the repository root:
 `py src/pipeline.py`
 
 This step creates:
-- outputs/example_summary.csv
-- outputs/vo2_time_*.png
+
+`outputs/example_summary.csv`
+
+`outputs/vo2_time_*.png`
 
 ### 3. Outputs
 
@@ -174,7 +180,7 @@ This generates:
 
 An applied regression analysis explores the relationship between metabolic cost and running speed.
 
-Linear Regression
+**Linear Regression**
 
 The following model is fit using ordinary least squares:
 
@@ -184,9 +190,9 @@ Model Equation
 
 > Speed (m/s) = 1.83 + 0.18 × Net Metabolic Power (W/kg)
 
-Interpretation
+**Interpretation**
 
-Results demonstrate a positive association between increasing metabolic power and running speed, consistent with physiological expectations at steady-state submaximal exercise intensities.
+*Results demonstrate a **positive association** between running speed and increasing metabolic power, consistent with physiological expectations at steady-state submaximal exercise intensities.*
 
 The slope coefficient reflects:
 
@@ -196,9 +202,9 @@ The slope coefficient reflects:
 
 > p-value = 0.081
 
-This near-significant trend is consistent with expected small-sample physiology datasets in which between-subject variance limits formal statistical power but effect directions remain physiologically coherent.
+*This near-significant trend is consistent with expected small-sample physiology datasets in which between-subject variance limits formal statistical power but effect directions remain physiologically coherent.*
 
-Modeling Outputs
+**Modeling Outputs**
 
 Regression plot
 `outputs/speed_vs_metabolic_power_regression.png`
@@ -212,7 +218,7 @@ All modeling code is contained within:
 
 ---
 
-Example Use Cases
+**Example Use Cases**
 
 This pipeline structure is useful for:
 
@@ -226,7 +232,7 @@ This pipeline structure is useful for:
 
 ---
 
-Notes
+**Notes**
 
 - Sample data are synthetic and provided for workflow demonstration.
 
@@ -236,7 +242,7 @@ Notes
 
 ---
 
-Author
+**Author**
 
 Samuel Rosario, PhD
 Biomechanics & Exercise Physiology

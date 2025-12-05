@@ -188,7 +188,7 @@ The following model is fit using ordinary least squares:
 
 Model Equation
 
-> speed=β0​+β1​×net metabolic power
+> speed = β0​ + β1​ × net metabolic power
 
 > Speed (m/s) = 1.83 + 0.18 × Net Metabolic Power (W/kg)
 

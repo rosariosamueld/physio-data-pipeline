@@ -6,39 +6,6 @@ DATA_PATH = "data/sample_raw_metabolic_data.csv"
 OUTPUT_PATH = "outputs/example_summary.csv"
 
 
-def brockway_metabolic_power(vo2_ml_min: pd.Series,
-                             vco2_ml_min: pd.Series) -> pd.Series:
-    """
-    Compute metabolic power (W) using Brockway (1987).
-
-    VO2 and VCO2 are expected in mL/min.
-    """
-    vo2_l_min = vo2_ml_min / 1000.0
-    vco2_l_min = vco2_ml_min / 1000.0
-
-    # Energy expenditure (kcal/min)
-    kcal_min = 3.941 * vo2_l_min + 1.106 * vco2_l_min
-
-    # Convert to Watts (1 kcal/min ≈ 69.78 W)
-    watts = kcal_min * 69.78
-    return watts
-
-
-def add_metabolic_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Add metabolic power columns (W and W/kg) to the dataframe.
-
-    Assumes df has VO2_ml_min, VCO2_ml_min, and body_mass_kg.
-    """
-    df = df.copy()
-    df["metabolic_power_W"] = brockway_metabolic_power(
-        df["VO2_ml_min"],
-        df["VCO2_ml_min"]
-    )
-    df["metabolic_power_W_kg"] = df["metabolic_power_W"] / df["body_mass_kg"]
-    return df
-
-
 def select_last_n_seconds(df: pd.DataFrame,
                           n_seconds: int,
                           time_col: str = "time_s") -> pd.DataFrame:
@@ -55,35 +22,70 @@ def summarize_subject(df: pd.DataFrame,
                       run_phase: str = "run",
                       window_s: int = 120) -> pd.DataFrame:
     """
-    Compute summary metrics for a single subject.
+    Compute subject-level summary metrics using the committee-recommended
+    NET VO2/VCO2 conventions.
 
-    Returns a one-row DataFrame.
+    Steps:
+    - Take the last `window_s` seconds of rest and run.
+    - Compute mean VO2 and VCO2 (mL/min) in each window.
+    - Compute net VO2 and VCO2 (run - rest).
+    - Running economy: net VO2 per kg (mL·kg^-1·min^-1).
+    - Net metabolic power (W/kg) from net VO2 and VCO2 using
+      16.58 and 4.51 coefficients (kJ/min) converted to W/kg.
     """
+
     subject_id = df["subject_id"].iloc[0]
+    mass_kg = df["body_mass_kg"].iloc[0]
 
-    # Add metabolic columns
-    df = add_metabolic_columns(df)
+    # Split by phase
+    rest = df[df["phase"] == rest_phase].copy()
+    run = df[df["phase"] == run_phase].copy()
 
-    # Rest and run subsets
-    rest = df[df["phase"] == rest_phase]
-    run = df[df["phase"] == run_phase]
-
-    # Take last `window_s` seconds of each phase
+    # Take last `window_s` seconds in each phase
     rest_win = select_last_n_seconds(rest, window_s)
     run_win = select_last_n_seconds(run, window_s)
 
-    rest_mean = rest_win["metabolic_power_W_kg"].mean()
-    run_mean = run_win["metabolic_power_W_kg"].mean()
-    net_mean = run_mean - rest_mean
+    # Mean VO2 and VCO2 (mL/min) in each window
+    rest_vo2 = rest_win["VO2_ml_min"].mean()
+    run_vo2 = run_win["VO2_ml_min"].mean()
 
-    speed = run_win["speed_m_per_s"].mean()
+    rest_vco2 = rest_win["VCO2_ml_min"].mean()
+    run_vco2 = run_win["VCO2_ml_min"].mean()
+
+    # Net VO2 and VCO2 (run - rest), still in mL/min
+    net_vo2 = run_vo2 - rest_vo2
+    net_vco2 = run_vco2 - rest_vco2
+
+    # Net VO2 and VCO2 in L/min
+    net_vo2_L = net_vo2 / 1000.0
+    net_vco2_L = net_vco2 / 1000.0
+
+    # Running economy: net VO2 per kg (mL·kg^-1·min^-1)
+    running_economy_ml_kg_min = net_vo2 / mass_kg
+
+    # Energy cost (kJ/min) using committee-recommended coefficients
+    energy_kj_min = 16.58 * net_vo2_L + 4.51 * net_vco2_L
+
+    # Convert to W (J/s): kJ/min * 1000 / 60
+    power_watts = energy_kj_min * 1000.0 / 60.0
+
+    # Net metabolic power per kg
+    power_per_kg = power_watts / mass_kg
+
+    # Average running speed over the run window
+    speed_m_per_s = run_win["speed_m_per_s"].mean()
 
     summary = {
         "subject_id": subject_id,
-        "rest_metabolic_power_Wkg": rest_mean,
-        "run_metabolic_power_Wkg": run_mean,
-        "net_metabolic_power_Wkg": net_mean,
-        "speed_m_per_s": speed,
+        "rest_vo2_ml_min": rest_vo2,
+        "run_vo2_ml_min": run_vo2,
+        "rest_vco2_ml_min": rest_vco2,
+        "run_vco2_ml_min": run_vco2,
+        "net_vo2_ml_min": net_vo2,
+        "net_vco2_ml_min": net_vco2,
+        "running_economy_ml_kg_min": running_economy_ml_kg_min,
+        "net_metabolic_power_Wkg": power_per_kg,
+        "speed_m_per_s": speed_m_per_s,
     }
 
     return pd.DataFrame([summary])
@@ -116,6 +118,7 @@ def plot_vo2_time(df: pd.DataFrame,
 
     plt.close(fig)
 
+
 def main():
     # Load full dataset
     df = pd.read_csv(DATA_PATH)
@@ -143,6 +146,7 @@ def main():
 
     print("Summary results:")
     print(results)
+
 
 if __name__ == "__main__":
     main()

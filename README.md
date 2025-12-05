@@ -53,10 +53,10 @@ For each participant:
 
 Mean values are calculated for each phase:
 
-> run_vo2 = mean VO₂ during run window
-> rest_vo2 = mean VO₂ during rest window
-> run_vco2 = mean VCO₂ during run window
-> rest_vco2 = mean VCO₂ during rest window
+- run_vo2 = mean VO₂ during run window
+- rest_vo2 = mean VO₂ during rest window
+- run_vco2 = mean VCO₂ during run window
+- rest_vco2 = mean VCO₂ during rest window
 
 Net gas exchange:
 

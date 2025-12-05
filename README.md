@@ -20,31 +20,24 @@ This repository is structured as a lightweight, reproducible analysis pipeline s
 
 ## Project Structure
 
-```markdown```
-```text```
+```text
+```
 physio-data-pipeline/
 ├── data/
-│   └── sample_raw_metabolic_data.csv
-│
-├── notebooks/
-│   ├── speed_vs_metabolic_power.ipynb
-│   └── speed_vs_metabolic_power_regression.ipynb
+│   └── sample_raw_metabolic_data.csv      # Example metabolic cart dataset
 │
 ├── src/
-│   ├── __init__.py
-│   └── pipeline.py
+│   └── pipeline.py                        # Main processing pipeline
 │
 ├── outputs/
-│   ├── example_summary.csv
-│   ├── speed_vs_metabolic_power_scatter.png
-│   ├── speed_vs_metabolic_power_regression.png
-│   ├── vo2_time_P01.png
+│   ├── example_summary.csv                # Subject-level summary metrics
+│   ├── vo2_time_P01.png                   # VO₂ vs time plots (one per subject)
 │   ├── vo2_time_P02.png
-│   └── vo2_time_P...png
+│   └── ...
 │
 ├── requirements.txt
 └── README.md
-```
+
 ---
 
 ## Methodology

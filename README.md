@@ -20,22 +20,24 @@ This repository is structured as a lightweight, reproducible analysis pipeline s
 
 ## Project Structure
 
+```markdown
+```text
 physio-data-pipeline/
 ├── data/
-│ └── sample_raw_metabolic_data.csv # Example metabolic cart dataset
+│   └── sample_raw_metabolic_data.csv      # Example metabolic cart dataset
 │
 ├── src/
-│ └── pipeline.py # Main processing pipeline
+│   └── pipeline.py                        # Main processing pipeline
 │
 ├── outputs/
-│ ├── example_summary.csv # Subject-level summary metrics
-│ ├── vo2_time_P01.png # VO₂ vs time plots (one per subject)
-│ ├── vo2_time_P02.png
-│ └── ...
+│   ├── example_summary.csv                # Subject-level summary metrics
+│   ├── vo2_time_P01.png                   # VO₂ vs time plots (one per subject)
+│   ├── vo2_time_P02.png
+│   └── ...
 │
 ├── requirements.txt
 └── README.md
-
+```
 ---
 
 ## Methodology

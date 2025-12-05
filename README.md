@@ -53,15 +53,15 @@ For each participant:
 
 Mean values are calculated for each phase:
 
-run_vo2 = mean VO₂ during run window
-rest_vo2 = mean VO₂ during rest window
-run_vco2 = mean VCO₂ during run window
-rest_vco2 = mean VCO₂ during rest window
+> run_vo2 = mean VO₂ during run window
+> rest_vo2 = mean VO₂ during rest window
+> run_vco2 = mean VCO₂ during run window
+> rest_vco2 = mean VCO₂ during rest window
 
 Net gas exchange:
 
-net VO₂ = run VO₂ − rest VO₂ (mL/min)
-net VCO₂ = run VCO₂ − rest VCO₂ (mL/min)
+> net VO₂ = run VO₂ − rest VO₂ (mL/min)
+> net VCO₂ = run VCO₂ − rest VCO₂ (mL/min)
 
 ---
 
@@ -69,7 +69,7 @@ net VCO₂ = run VCO₂ − rest VCO₂ (mL/min)
 
 Running economy is expressed as:
 
-net VO₂ / body mass
+> net VO₂ / body mass
 
 
 Resulting units:
@@ -82,12 +82,12 @@ This aligns with convention used in steady-state metabolic cost research.
 
 ### Net metabolic power
 
-Energy (kJ/min) = 16.58 × net VO₂ (L/min) + 4.51 × net VCO₂ (L/min)
+> Energy (kJ/min) = 16.58 × net VO₂ (L/min) + 4.51 × net VCO₂ (L/min)
 
 Conversion to watts and normalization by body mass:
 
-Watts = (kJ/min × 1000) ÷ 60
-Power (W/kg) = Watts ÷ body mass
+> Watts = (kJ/min × 1000) ÷ 60
+> Power (W/kg) = Watts ÷ body mass
 
 
 Final output metric:
@@ -178,11 +178,11 @@ Linear Regression
 
 The following model is fit using ordinary least squares:
 
-speed_m_per_s ~ net_metabolic_power_Wkg
+> speed_m_per_s ~ net_metabolic_power_Wkg
 
 Model Equation
 
-Speed (m/s) = 1.83 + 0.18 × Net Metabolic Power (W/kg)
+> Speed (m/s) = 1.83 + 0.18 × Net Metabolic Power (W/kg)
 
 Interpretation
 

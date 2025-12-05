@@ -21,7 +21,6 @@ This repository is structured as a lightweight, reproducible analysis pipeline s
 ## Project Structure
 
 ```text
-```
 physio-data-pipeline/
 ├── data/
 │   └── sample_raw_metabolic_data.csv      # Example metabolic cart dataset

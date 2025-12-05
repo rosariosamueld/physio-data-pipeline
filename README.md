@@ -188,11 +188,9 @@ The following model is fit using ordinary least squares:
 
 Model Equation
 
+> speed=β0​+β1​×net metabolic power
+
 > Speed (m/s) = 1.83 + 0.18 × Net Metabolic Power (W/kg)
-
-**Interpretation**
-
-*Results demonstrate a **positive association** between running speed and increasing metabolic power, consistent with physiological expectations at steady-state submaximal exercise intensities.*
 
 The slope coefficient reflects:
 
@@ -202,7 +200,21 @@ The slope coefficient reflects:
 
 > p-value = 0.081
 
-*This near-significant trend is consistent with expected small-sample physiology datasets in which between-subject variance limits formal statistical power but effect directions remain physiologically coherent.*
+**Interpretation**
+
+We modeled running speed as a function of net metabolic power (W/kg) using linear regression (statsmodels OLS):
+
+Results:
+
+| Parameter              | Estimate                         | 95% CI          | p-value |
+|------------------------|----------------------------------|------------------|---------|
+| Intercept              | 1.83 m/s                         | [0.22, 3.45]    | 0.029   |
+| Net metabolic power    | 0.18 m·s⁻¹ per W·kg⁻¹            | [-0.03, 0.38]   | 0.081   |
+
+
+- Higher net metabolic power is associated with faster running speeds.
+- Each additional 1 W·kg⁻¹ corresponded to ~0.18 m·s⁻¹ increase in speed.
+- The relationship showed a positive trend but did not reach statistical significance due to small sample size (n = 15).
 
 **Modeling Outputs**
 
@@ -217,7 +229,20 @@ All modeling code is contained within:
 `notebooks/speed_vs_metabolic_power_regression.ipynb`
 
 ---
+### Reproducibility
 
+**Brief setup instructions:**
+
+Run the full pipeline:
+```bash
+pip install -r requirements.txt
+py src/pipeline.py
+```
+**Re-run regression notebook:**
+
+`jupyter notebook notebooks/speed_vs_metabolic_power_regression.ipynb`
+
+---
 **Example Use Cases**
 
 This pipeline structure is useful for:
@@ -244,6 +269,6 @@ This pipeline structure is useful for:
 
 **Author**
 
-Samuel Rosario, PhD
+**Samuel Rosario**, PhD
 Biomechanics & Exercise Physiology
 Clinical data analytics • signal processing • metabolic modeling

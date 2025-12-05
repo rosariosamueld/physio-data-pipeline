@@ -123,7 +123,7 @@ Includes the following columns:
 
 For each subject, the pipeline produces a VO₂ time-series plot:
 
-outputs/vo2_time_<subject_id>.png
+`outputs/vo2_time_<subject_id>.png`
 
 
 Each plot shows:
@@ -144,7 +144,7 @@ pip install -r requirements.txt
 
 From the repository root:
 
-py src/pipeline.py
+`py src/pipeline.py`
 
 This step creates:
 - outputs/example_summary.csv
@@ -152,9 +152,9 @@ This step creates:
 
 ### 3. Outputs
 
-Summary CSV: outputs/example_summary.csv
+Summary CSV: `outputs/example_summary.csv`
 
-Plots: outputs/vo2_time_*.png
+Plots: `outputs/vo2_time_*.png`
 
 Each run automatically overwrites existing outputs with updated results.
 
@@ -162,13 +162,13 @@ Each run automatically overwrites existing outputs with updated results.
 
 Open and execute:
 
-notebooks/speed_vs_metabolic_power_regression.ipynb
+`notebooks/speed_vs_metabolic_power_regression.ipynb`
 
 This generates:
 
-- outputs/speed_vs_metabolic_power_regression.png
+`outputs/speed_vs_metabolic_power_regression.png`
 
-- outputs/speed_vs_metabolic_power_summary.csv
+`outputs/speed_vs_metabolic_power_summary.csv`
 
 ## Statistical Modeling
 
@@ -190,25 +190,25 @@ Results demonstrate a positive association between increasing metabolic power an
 
 The slope coefficient reflects:
 
-β = 0.18 m·s⁻¹ per W·kg⁻¹
+> β = 0.18 m·s⁻¹ per W·kg⁻¹
 
-95% CI: −0.03 to 0.38
+> 95% CI: −0.03 to 0.38
 
-p-value = 0.081
+> p-value = 0.081
 
 This near-significant trend is consistent with expected small-sample physiology datasets in which between-subject variance limits formal statistical power but effect directions remain physiologically coherent.
 
 Modeling Outputs
 
 Regression plot
-outputs/speed_vs_metabolic_power_regression.png
+`outputs/speed_vs_metabolic_power_regression.png`
 
 Coefficient table
-outputs/speed_vs_metabolic_power_summary.csv
+`outputs/speed_vs_metabolic_power_summary.csv`
 
 All modeling code is contained within:
 
-notebooks/speed_vs_metabolic_power_regression.ipynb
+`notebooks/speed_vs_metabolic_power_regression.ipynb`
 
 ---
 

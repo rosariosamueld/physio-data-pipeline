@@ -7,17 +7,23 @@ https://physio-data-pipeline-iswwfduefm4d3sn5uvxbkm.streamlit.app/
 
 This project demonstrates a reproducible Python pipeline for processing metabolic cart data to calculate **running economy** and **net metabolic power** using physiologically accepted methods.
 
-The workflow reflects procedures commonly used in exercise physiology and biomechanics research, including net oxygen consumption calculations and steady-state window averaging.
+The workflow reflects procedures commonly used in exercise physiology and biomechanics research, including net oxygen consumption calculations, steady-state window averaging, and exploratory statistical modeling.
 
 The pipeline supports:
+
 - Multi-subject metabolic data ingestion
 - Windowed extraction of steady-state rest and running phases
 - Committee-standard calculations of:
   - Net VO₂
   - Running economy (mL·kg⁻¹·min⁻¹)
   - Net metabolic power (W·kg⁻¹)
-- Subject-level summary export
-- VO₂ time-series visualization
+- Subject-level summary metric export
+- Regression modeling of speed–metabolic cost relationships
+- Interactive visualization via Streamlit:
+  - VO₂ time-series with confidence bands
+  - Per-subject metric panels
+  - Cross-subject run-phase comparisons
+  - Power-based filtering and CSV export
 
 This repository is structured as a lightweight, reproducible analysis pipeline suitable for use in research and clinical data workflows.
 
@@ -137,15 +143,35 @@ Includes the following columns:
 
 ### Visualization
 
-For each subject, the pipeline produces a VO₂ time-series plot:
+The project produces both static and interactive visualizations for metabolic inspection and comparison.
+
+**Static outputs (batch pipeline):**
+
+For each subject, the pipeline generates VO₂ time-series plots:
 
 `outputs/vo2_time_<subject_id>.png`
 
+Each plot includes:
 
-Each plot shows:
 - Continuous VO₂ data over time
 - Phase separation (rest vs run)
-- Visual confirmation of steady-state windows
+- Highlighted steady-state windows
+- Phase-averaged confidence interval shading
+
+Additionally, regression modeling outputs include:
+
+`outputs/speed_vs_metabolic_power_regression.png`
+
+showing the relationship between net metabolic power and running speed with confidence bands.
+
+**Interactive outputs (Streamlit dashboard):**
+
+The dashboard enables dynamic visualization, including:
+
+- VO₂ time-series for selected subjects with CI bands
+- Side-by-side subject metric panels
+- Multi-subject run-phase VO₂ comparisons aligned to run onset
+- Power-based filtering of displayed subjects
 
 ---
 
@@ -156,39 +182,6 @@ Each plot shows:
 ```bash
 pip install -r requirements.txt
 ```
-### 2. Run processing
-
-From the repository root:
-
-`py src/pipeline.py`
-
-This step creates:
-
-`outputs/example_summary.csv`
-
-`outputs/vo2_time_*.png`
-
-### 3. Outputs
-
-Summary CSV: `outputs/example_summary.csv`
-
-Plots: `outputs/vo2_time_*.png`
-
-Each run automatically overwrites existing outputs with updated results.
-
-### 4. Run regression modeling
-
-Open and execute:
-
-`notebooks/speed_vs_metabolic_power_regression.ipynb`
-
-This generates:
-
-`outputs/speed_vs_metabolic_power_regression.png`
-
-`outputs/speed_vs_metabolic_power_summary.csv`
-
----
 
 ## Streamlit Dashboard
 
@@ -214,7 +207,7 @@ From the repository root:
 
 ```bash
 py -m streamlit run streamlit_app.py
-
+```
 
 ## Statistical Modeling
 
@@ -242,26 +235,27 @@ The slope coefficient reflects:
 
 **Interpretation**
 
-We modeled running speed as a function of net metabolic power (W/kg) using linear regression (statsmodels OLS):
+Running speed was modeled as a function of net metabolic power (W·kg⁻¹) using ordinary least squares (statsmodels OLS).
 
-Results:
+**Regression results:**
 
 | Parameter              | Estimate                         | 95% CI          | p-value |
 |------------------------|----------------------------------|------------------|---------|
 | Intercept              | 1.83 m/s                         | [0.22, 3.45]    | 0.029   |
 | Net metabolic power    | 0.18 m·s⁻¹ per W·kg⁻¹            | [-0.03, 0.38]   | 0.081   |
 
+**Model interpretation**
 
-- Higher net metabolic power is associated with faster running speeds.
-- Each additional 1 W·kg⁻¹ corresponded to ~0.18 m·s⁻¹ increase in speed.
-- The relationship showed a positive trend but did not reach statistical significance due to small sample size (n = 15).
+- Higher net metabolic power tended to be associated with faster running speeds.
+- Each additional 1 W·kg⁻¹ of metabolic power corresponded to an approximate increase of **0.18 m·s⁻¹** in speed.
+- Although the slope estimate was positive, the relationship did not reach conventional statistical significance (*p* = 0.081), likely reflecting the limited sample size (*n* = 15).
 
-**Modeling Outputs**
+**Modeling outputs**
 
-Regression plot
+Regression plot  
 `outputs/speed_vs_metabolic_power_regression.png`
 
-Coefficient table
+Coefficient table  
 `outputs/speed_vs_metabolic_power_summary.csv`
 
 All modeling code is contained within:
@@ -269,6 +263,37 @@ All modeling code is contained within:
 `notebooks/speed_vs_metabolic_power_regression.ipynb`
 
 ---
+
+## Interactive Dashboard (Streamlit)
+
+An interactive dashboard has been implemented using **Streamlit** to provide real-time visualization and exploration of subject-level metabolic data.
+
+### Features
+
+The dashboard allows users to:
+
+- Upload metabolic cart CSV files directly
+- Compute subject-level summary metrics (running economy, net metabolic power, speed)
+- Filter subjects by net metabolic power range
+- View **VO₂ time-series plots** for individual subjects with:
+  - Colorblind-safe line styling
+  - 95% confidence interval bands per phase
+  - Highlighted steady-state windows
+- Display **side-by-side subject metrics**
+- **Compare multiple subjects simultaneously**:
+  - Run-phase VO₂ traces aligned to run onset (time = 0)
+  - Overlaid plots with steady-state window shading
+  - Summary comparison table for economy, power, and speed
+- Download filtered summary metrics as CSV
+
+### Launching the dashboard locally
+
+From the repository root:
+
+```bash
+py -m streamlit run streamlit_app.py
+
+```
 ### Reproducibility
 
 **Brief setup instructions:**

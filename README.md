@@ -1,5 +1,10 @@
 # Physiological Data Pipeline for Metabolic Power and Running Economy
 
+## Live Interactive Dashboard
+
+**Try the app here:**
+https://physio-data-pipeline-iswwfduefm4d3sn5uvxbkm.streamlit.app/
+
 This project demonstrates a reproducible Python pipeline for processing metabolic cart data to calculate **running economy** and **net metabolic power** using physiologically accepted methods.
 
 The workflow reflects procedures commonly used in exercise physiology and biomechanics research, including net oxygen consumption calculations and steady-state window averaging.

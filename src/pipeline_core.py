@@ -1,9 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import statsmodels.api as sm
 import streamlit as st
 
-from .pipeline import summarize_subject  # reuse your existing function
+from .pipeline import summarize_subject
 
 
 def summarize_all_subjects(df: pd.DataFrame) -> pd.DataFrame:
@@ -24,40 +25,52 @@ def summarize_all_subjects(df: pd.DataFrame) -> pd.DataFrame:
     return pd.concat(summaries, ignore_index=True)
 
 
-def make_speed_vs_power_figure(summary_df: pd.DataFrame) -> plt.Figure:
+def make_speed_vs_power_figure(df: pd.DataFrame) -> plt.Figure:
     """
-    Create a simple scatter + best-fit line plot of
-    speed (m/s) vs net metabolic power (W/kg).
-
-    Returns a Matplotlib Figure object.
+    Scatterplot of speed vs net metabolic power with
+    OLS regression line and 95% mean CI shading.
     """
-    x = summary_df["net_metabolic_power_Wkg"]
-    y = summary_df["speed_m_per_s"]
+    # Drop any rows with missing values in the relevant columns
+    df = df.dropna(subset=["net_metabolic_power_Wkg", "speed_m_per_s"])
 
-    fig, ax = plt.subplots()
+    x = df["net_metabolic_power_Wkg"].values
+    y = df["speed_m_per_s"].values
 
-    # Scatter points
-    ax.scatter(x, y, alpha=0.8)
+    # Design matrix with intercept
+    X = sm.add_constant(x)
 
-    # Simple best-fit line using numpy.polyfit
-    if len(summary_df) >= 2:
-        m, b = np.polyfit(x, y, 1)
-        x_line = np.linspace(x.min(), x.max(), 100)
-        y_line = m * x_line + b
-        ax.plot(x_line, y_line, linestyle="--")
+    # OLS fit
+    model = sm.OLS(y, X).fit()
 
-        # simple R²
-        y_pred = m * x + b
-        ss_res = np.sum((y - y_pred) ** 2)
-        ss_tot = np.sum((y - y.mean()) ** 2)
-        r2 = 1 - ss_res / ss_tot if ss_tot > 0 else float("nan")
+    # Grid of x values for smooth line
+    x_pred = np.linspace(x.min(), x.max(), 100)
+    X_pred = sm.add_constant(x_pred)
 
-        ax.set_title(f"Speed vs Net Metabolic Power (R² ≈ {r2:.2f})")
-    else:
-        ax.set_title("Speed vs Net Metabolic Power")
+    # Predictions + 95% mean CI
+    pred = model.get_prediction(X_pred)
+    pred_df = pred.summary_frame(alpha=0.05)
 
+    y_pred = pred_df["mean"].values
+    ci_lower = pred_df["mean_ci_lower"].values
+    ci_upper = pred_df["mean_ci_upper"].values
 
-    fig.tight_layout()
+    # ---- Plotting ----
+    fig, ax = plt.subplots(figsize=(7, 5))
+
+    # Scatter
+    ax.scatter(x, y, alpha=0.9)
+
+    # Regression line
+    ax.plot(x_pred, y_pred, linestyle="--")
+
+    # 95% CI band
+    ax.fill_between(x_pred, ci_lower, ci_upper, alpha=0.25)
+
+    # Labels / title
+    ax.set_xlabel("Net metabolic power (W/kg)")
+    ax.set_ylabel("Speed (m/s)")
+    ax.set_title(f"Speed vs Net Metabolic Power (R² ≈ {model.rsquared:.2f})")
+
     return fig
 
 

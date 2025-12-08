@@ -5,6 +5,7 @@ from src.pipeline_core import (
     summarize_all_subjects,
     make_speed_vs_power_figure,
     make_vo2_time_figure,
+    make_vo2_compare_figure,
     summarize_group_text,
 )
 
@@ -102,17 +103,103 @@ if uploaded_file is not None:
         selected_subject = st.selectbox("Select a subject", subject_ids)
 
         # Show that subject's summary row
-        st.markdown("**Selected subject metrics:**")
-        st.dataframe(
-            filtered_summary[filtered_summary["subject_id"] == selected_subject]
+        st.markdown("**VO₂ over time (rest vs run):**")
+
+        # split layout: plot (wide) + metrics (narrow)
+        col_fig, col_info = st.columns([3, 2])
+
+        with col_fig:
+            vo2_fig = make_vo2_time_figure(
+                df[df["subject_id"] == selected_subject],
+                selected_subject,
+            )
+            st.pyplot(vo2_fig)
+
+        with col_info:
+            st.markdown("**Subject summary**")
+
+        # get this subject's summary row from the filtered summary
+        subj_row = filtered_summary[
+            filtered_summary["subject_id"] == selected_subject
+        ].iloc[0]
+
+        re = subj_row["running_economy_ml_kg_min"]
+        power = subj_row["net_metabolic_power_Wkg"]
+        speed = subj_row["speed_m_per_s"]
+
+        st.metric(
+            "Running economy",
+            f"{re:.1f} mL·kg⁻¹·min⁻¹",
+        )
+        st.metric(
+            "Net metabolic power",
+            f"{power:.2f} W/kg",
+        )
+        st.metric(
+            "Speed",
+            f"{speed:.2f} m/s",
         )
 
-                # VO2 over time plot for this subject (using full df)
-        st.markdown("**VO₂ over time (rest vs run):**")
-        vo2_fig = make_vo2_time_figure(
-            df[df["subject_id"] == selected_subject], selected_subject
+        st.caption(
+            "Values computed from the final 120 s of rest and run, "
+            "using net VO₂/VCO₂ conventions."
         )
-        st.pyplot(vo2_fig)
+
+
+        # ----------------------------
+        # Multi-subject comparison
+        # ----------------------------
+        st.subheader("Compare subjects (run-phase VO₂)")
+
+        compare_ids = st.multiselect(
+            "Select subjects to compare",
+            subject_ids,
+            default=subject_ids[:2] if len(subject_ids) >= 2 else subject_ids,
+        )
+
+        if compare_ids:
+            compare_df = df[df["subject_id"].isin(compare_ids)]
+
+            # Time-aligned comparison figure
+            fig_cmp = make_vo2_compare_figure(compare_df, compare_ids)
+            st.pyplot(fig_cmp)
+
+            st.caption(
+                "Run-phase VO₂ traces are aligned so that time 0 corresponds to the start "
+                "of the run for each subject. Shaded regions indicate the final 120 s "
+                "used for steady-state calculations."
+            )
+
+            # Small metrics table for the compared subjects
+            st.markdown("**Compared subjects – key metrics**")
+
+            compare_summary = (
+                filtered_summary[
+                    filtered_summary["subject_id"].isin(compare_ids)
+                ][
+                    [
+                        "subject_id",
+                        "running_economy_ml_kg_min",
+                        "net_metabolic_power_Wkg",
+                        "speed_m_per_s",
+                    ]
+                ]
+                .sort_values("subject_id")
+                .rename(
+                    columns={
+                        "subject_id": "Subject",
+                        "running_economy_ml_kg_min": "Running economy (mL·kg⁻¹·min⁻¹)",
+                        "net_metabolic_power_Wkg": "Net power (W/kg)",
+                        "speed_m_per_s": "Speed (m/s)",
+                    }
+                )
+            )
+
+            st.dataframe(compare_summary, use_container_width=True)
+
+        else:
+            st.info("Select one or more subjects to view a comparison plot.")
+
 
         # --- Automated interpretation of the filtered group ---
         st.subheader("Automated Summary of Filtered Group")

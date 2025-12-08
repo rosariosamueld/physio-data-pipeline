@@ -3,4 +3,5 @@ numpy
 matplotlib
 scipy
 scikit-learn
+statsmodels
 streamlit

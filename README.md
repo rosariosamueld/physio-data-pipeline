@@ -25,15 +25,22 @@ physio-data-pipeline/
 ├── data/
 │   └── sample_raw_metabolic_data.csv      # Example metabolic cart dataset
 │
-├── src/
-│   └── pipeline.py                        # Main processing pipeline
+├── notebooks/
+│   └── speed_vs_metabolic_power_regression.ipynb
+│                                         # Regression modeling analysis
 │
 ├── outputs/
 │   ├── example_summary.csv                # Subject-level summary metrics
+│   ├── speed_vs_metabolic_power_regression.png
+│   ├── speed_vs_metabolic_power_summary.csv
 │   ├── vo2_time_P01.png                   # VO₂ vs time plots (one per subject)
-│   ├── vo2_time_P02.png
 │   └── ...
 │
+├── src/
+│   ├── pipeline.py                        # End-to-end processing runner
+│   └── pipeline_core.py                  # Core calculation + plotting utilities
+│
+├── streamlit_app.py                      # Interactive visualization dashboard
 ├── requirements.txt
 └── README.md
 ```
@@ -175,6 +182,34 @@ This generates:
 `outputs/speed_vs_metabolic_power_regression.png`
 
 `outputs/speed_vs_metabolic_power_summary.csv`
+
+---
+
+## Streamlit Dashboard
+
+An interactive Streamlit dashboard is included for dynamic exploration of metabolic and performance metrics.
+
+The dashboard supports:
+
+- Uploading metabolic CSV files
+- Automatic computation of:
+  - Running economy
+  - Net metabolic power
+  - Subject-level summaries
+- Group-level visualization:
+  - Speed vs net metabolic power scatter and regression trend
+- Subject-level visualization:
+  - VO₂ time-series by experimental phase
+- Interactive filtering using net metabolic power ranges
+- On-demand download of filtered summary tables
+
+### Run the dashboard locally
+
+From the repository root:
+
+```bash
+py -m streamlit run streamlit_app.py
+
 
 ## Statistical Modeling
 
